@@ -7,17 +7,18 @@ use App\Http\Requests\SignupRequest;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Traits\Utils;
 
 class AuthController extends Controller
 {
+    use Utils;
 
     public function register(SignupRequest $request)
     {
         $data = $request->validated();
 
         $user = User::create($data);
-
-        // send verification code to phone number
+        $this->sendVerificationCode($user, 'phone');
 
         return $this->sendSuccess($user, 'User registration successful');
     }
@@ -27,6 +28,9 @@ class AuthController extends Controller
         $user = User::where('phone_number', $request->phone_number)->first();
         if(!$user || !Hash::check($request->password, $user->password))
             return $this->sendError('The credentials do not match', 422);
+
+        if(!$user->hasVerifiedPhoneNumber)
+            return $this->sendError('Please verify your phone address', 422);
 
         $user->tokens()->delete();
         $token = $user->createToken($request->device_name ?? 'unknown-device')->plainTextToken;

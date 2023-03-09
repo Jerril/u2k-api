@@ -48,4 +48,10 @@ class User extends Authenticatable
     {
         $this->attributes['password'] = Hash::make($value);
     }
+
+    // check if user has verified phone number
+    protected function hasPhoneNumberVerified()
+    {
+        return !is_null($this->phone_number_verified_at);
+    }
 }

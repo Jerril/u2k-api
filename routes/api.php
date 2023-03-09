@@ -19,6 +19,10 @@ Route::controller(AuthController::class)->group(function() {
     Route::post('/login', 'login');
 });
 
+// Route::get('/send-sms', function(App\Services\Termii $termii) {
+//     return $termii->sendSMS("2349049423109", "hello customer");
+// });
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
