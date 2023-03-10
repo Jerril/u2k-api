@@ -30,4 +30,12 @@ trait Utils
 
         return;
     }
+
+    public function formatPhoneNumber(string $phone_number): string
+    {
+        $phone_number = preg_replace('/[^0-9]/', '', $phone_number);
+        $phone_number = ltrim($phone_number, '0');
+        $phone_number = '234'.$phone_number;
+        return $phone_number;
+    }
 }

@@ -8,10 +8,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
+use App\Traits\Utils;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, Utils;
 
     /**
      * The attributes that are mass assignable.
@@ -49,6 +50,11 @@ class User extends Authenticatable
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = Hash::make($value);
+    }
+
+    public function setPhoneNumberAttribute($value)
+    {
+        $this->attributes['phone_number'] = $this->formatPhoneNumber($value);
     }
 
     // check if user has verified phone number

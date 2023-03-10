@@ -21,12 +21,16 @@ class AuthController extends Controller
         $user = User::create($data);
         $this->sendVerificationCode($user, 'phone');
 
-        return $this->sendSuccess($user, 'User registration successful');
+        return $this->sendSuccess($user, 'Registration successful. Check your phone for verification code');
     }
 
     public function login(LoginRequest $request)
     {
-        $user = User::where('phone_number', $request->phone_number)->first();
+        $data = $request->validated();
+        // convert phone number to international format
+        $phone_number = $this->formatPhoneNumber($request->phone_number);
+
+        $user = User::where('phone_number', $phone_number)->first();
         if(!$user || !Hash::check($request->password, $user->password))
             return $this->sendError('The credentials do not match', 422);
 
@@ -48,33 +52,37 @@ class AuthController extends Controller
     public function sendPhoneNumberVerificationCode(Request $request)
     {
         $data = $request->validate([
-            'phone_number' => 'required|string|exists:users,phone_number',
+            'phone_number' => 'required|string',
         ]);
+        // convert phone number to international format
+        $phone_number = $this->formatPhoneNumber($request->phone_number);
 
-        $user = User::where('phone_number', $request->phone_number)->first();
+        $user = User::where('phone_number', $phone_number)->first();
         if($user->hasVerifiedPhoneNumber){
             return $this->sendError("Phone number is already verified", 422);
         }
 
         $this->sendVerificationCode($user, 'phone');
 
-        return $this->sendSuccess(message: 'Check your '.$data['type'].' for the token');
+        return $this->sendSuccess(message: 'Check your phone for verification code');
     }
 
     public function verifyPhoneNumber(Request $request)
     {
         $data = $request->validate([
-            'phone_number' => 'required|string|exists:users,phone_number',
+            'phone_number' => 'required|string',
             'token' => 'required|string'
         ]);
+        // convert phone number to international format
+        $phone_number = $this->formatPhoneNumber($request->phone_number);
 
         $existing_token = DB::table('user_verification_tokens')->where([
-            'phone_number' => $request->phone_number,
+            'phone_number' => $phone_number,
             'type' => 'phone',
             'token' => $request->token
         ])->first();
 
-        if(!$existing_token) return $this->sendError('Token not found. Kindly request for a new token');
+        if(!$existing_token) return $this->sendError('Code not found. Kindly request for a new code');
         // check if token has expired
 
         DB::table('user_verification_tokens')->where([
@@ -83,8 +91,8 @@ class AuthController extends Controller
             'token' => $request->token
         ])->delete();
 
-        User::where('phone_number', $request->phone_number)->update(['phone_number_verified_at' => now()]);
+        User::where('phone_number', $phone_number)->update(['phone_number_verified_at' => now()]);
 
-        return $this->sendSuccess(message: 'User phone number verification successful');
+        return $this->sendSuccess(message: 'Phone number verified successfully');
     }
 }
