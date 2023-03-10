@@ -24,7 +24,7 @@ trait Utils
             'updated_at' => now()
         ]);
 
-        $message = "<#> Dear ".$user->name.", your U2K confirmation code is ".$token.". Do not share this code with anyone. Thank you for choosing U2K.";
+        $message = "<#> Dear ".$user->name.", your U2K confirmation code is ".$token.". Do not share this code with anyone. Thank you for choosing us.";
         SendPhoneNumberVerificationCode::dispatch($user, $message);
         // (new \App\Services\Termii())->sendSMS($user->phone_number, $message);
 

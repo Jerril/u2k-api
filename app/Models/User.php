@@ -58,8 +58,8 @@ class User extends Authenticatable
     }
 
     // check if user has verified phone number
-    protected function hasPhoneNumberVerified()
+    protected function getHasVerifiedPhoneNumberAttribute()
     {
-        return !is_null($this->phone_number_verified_at);
+        return !is_null($this->attributes['phone_number_verified_at']);
     }
 }
