@@ -24,8 +24,9 @@ trait Utils
             'updated_at' => now()
         ]);
 
-        $message = $token." is the OTP for your phone number verification. Do not disclose to anyone";
+        $message = "<#> Dear ".$user->name.", your U2K confirmation code is ".$token.". Do not share this code with anyone. Thank you for choosing U2K.";
         SendPhoneNumberVerificationCode::dispatch($user, $message);
+        // (new \App\Services\Termii())->sendSMS($user->phone_number, $message);
 
         return;
     }
