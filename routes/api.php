@@ -14,11 +14,11 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-Route::controller(AuthController::class)->group(function() {
-    Route::post('/register', 'register');
+Route::prefix('users')->controller(AuthController::class)->group(function() {
+    Route::post('/', 'store');
     Route::post('/login', 'login');
-    Route::post('/user/verify', 'verifyPhoneNumber');
-    Route::post('/user/verification-code', 'sendPhoneNumberVerificationCode');
+    Route::post('/verify', 'verifyPhoneNumber');
+    Route::post('/verification-code', 'sendPhoneNumberVerificationCode');
 });
 
 Route::get('/send-sms', function(App\Services\Termii $termii) {
@@ -26,5 +26,5 @@ Route::get('/send-sms', function(App\Services\Termii $termii) {
 });
 
 Route::middleware('auth:sanctum')->group(function() {
-    Route::get('/logout', [AuthController::class, 'logout']);
+    Route::get('/users/logout', [AuthController::class, 'logout']);
 });

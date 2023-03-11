@@ -14,7 +14,7 @@ class AuthController extends Controller
 {
     use Utils;
 
-    public function register(SignupRequest $request)
+    public function store(SignupRequest $request)
     {
         $data = $request->validated();
 
