@@ -26,5 +26,5 @@ Route::prefix('users')->group(function() {
 });
 
 Route::middleware('auth:sanctum')->group(function() {
-    Route::get('/users/logout', LogoutController::class);
+    Route::delete('/users/logout', LogoutController::class);
 });
