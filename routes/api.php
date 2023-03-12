@@ -2,7 +2,11 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SignupController;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\PhoneNumberVerificationController;
+use App\Http\Controllers\SendPhoneNumberVerificationCodeController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,17 +18,13 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-Route::prefix('users')->controller(AuthController::class)->group(function() {
-    Route::post('/', 'store');
-    Route::post('/login', 'login');
-    Route::post('/verify', 'verifyPhoneNumber');
-    Route::post('/verification-code', 'sendPhoneNumberVerificationCode');
-});
-
-Route::get('/send-sms', function(App\Services\Termii $termii) {
-    return $termii->sendSMS("2349049423109", "<#> Dear Jeremiah, your U2K confirmation code is 112233. Do not share this code with anyone. Thank you for choosing us.");
+Route::prefix('users')->group(function() {
+    Route::post('/', SignupController::class);
+    Route::post('/login', LoginController::class);
+    Route::put('/verify', PhoneNumberVerificationController::class);
+    Route::post('/verification-code', SendPhoneNumberVerificationCodeController::class);
 });
 
 Route::middleware('auth:sanctum')->group(function() {
-    Route::get('/users/logout', [AuthController::class, 'logout']);
+    Route::get('/users/logout', LogoutController::class);
 });
