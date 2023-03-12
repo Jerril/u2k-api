@@ -26,11 +26,11 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $data = $request->validated();
         // convert phone number to international format
         $phone_number = $this->formatPhoneNumber($request->phone_number);
 
         $user = User::where('phone_number', $phone_number)->first();
+
         if(!$user || !Hash::check($request->password, $user->password)){
             return $this->sendError('The credentials do not match', 422);
         }
@@ -47,16 +47,18 @@ class AuthController extends Controller
 
     public function sendPhoneNumberVerificationCode(Request $request)
     {
-        $data = $request->validate([
+        $request->validate([
             'phone_number' => 'required|string',
         ]);
         // convert phone number to international format
         $phone_number = $this->formatPhoneNumber($request->phone_number);
 
         $user = User::where('phone_number', $phone_number)->first();
+
         if(!$user){
             return $this->sendError('User not found', 404);
         }
+
         if($user->hasVerifiedPhoneNumber){
             return $this->sendError("Phone number is already verified", 422);
         }
@@ -72,10 +74,11 @@ class AuthController extends Controller
             'phone_number' => 'required|string',
             'code' => 'required|string'
         ]);
+
         // convert phone number to international format
         $phone_number = $this->formatPhoneNumber($request->phone_number);
-
         $user = User::where('phone_number', $phone_number)->first();
+
         if(!$user){
             return $this->sendError('User not found', 404);
         }
@@ -89,6 +92,7 @@ class AuthController extends Controller
         if(!$existing_token){
             return $this->sendError('Code not found. Kindly request for a new code', 422);
         }
+
         // check if token has expired
 
         DB::table('user_verification_tokens')->where([
