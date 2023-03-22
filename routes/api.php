@@ -18,6 +18,8 @@ use App\Http\Controllers\SendPhoneNumberVerificationCodeController;
 |
 */
 
+Route::get('/', fn() => "u2k: Kindly go back");
+
 Route::prefix('users')->group(function() {
     Route::post('/', SignupController::class);
     Route::post('/login', LoginController::class);
