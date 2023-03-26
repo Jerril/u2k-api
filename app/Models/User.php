@@ -19,14 +19,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'phone_number',
-        'phone_number_verified_at',
-        'email_verified_at',
-        'password'
-    ];
+    protected $guarded = [];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -44,6 +37,7 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
+        'qrcode' => 'object',
         'email_verified_at' => 'datetime',
     ];
 

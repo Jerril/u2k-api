@@ -7,6 +7,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\PhoneNumberVerificationController;
 use App\Http\Controllers\SendPhoneNumberVerificationCodeController;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 /*
 |--------------------------------------------------------------------------
 | API Routes

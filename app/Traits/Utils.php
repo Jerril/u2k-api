@@ -14,7 +14,8 @@ trait Utils
 
         DB::table('user_verification_tokens')->where(['type' => $type, 'phone_number' => $user->phone_number])->delete();
 
-        $token = rand(100000, 999999);
+        // $token = rand(100000, 999999);
+        $token = 123098;
 
         DB::table('user_verification_tokens')->insert([
             'phone_number' => $user->phone_number,
@@ -24,8 +25,8 @@ trait Utils
             'updated_at' => now()
         ]);
 
-        $message = "<#> Dear ".$user->name.", your U2K confirmation code is ".$token.". Do not share this code with anyone. Thank you for choosing us.";
-        SendPhoneNumberVerificationCode::dispatch($user, $message);
+        // $message = "<#> Dear ".$user->name.", your U2K confirmation code is ".$token.". Do not share this code with anyone. Thank you for choosing us.";
+        // SendPhoneNumberVerificationCode::dispatch($user, $message);
         // (new \App\Services\Termii())->sendSMS($user->phone_number, $message);
 
         return;
