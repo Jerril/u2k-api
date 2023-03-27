@@ -28,6 +28,7 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
+        'pin',
         'remember_token',
     ];
 
@@ -44,6 +45,11 @@ class User extends Authenticatable
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = Hash::make($value);
+    }
+
+    public function setPinAttribute($value)
+    {
+        $this->attributes['pin'] = Hash::make($value);
     }
 
     public function setPhoneNumberAttribute($value)

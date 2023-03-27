@@ -7,7 +7,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\PhoneNumberVerificationController;
 use App\Http\Controllers\SendPhoneNumberVerificationCodeController;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Http\Controllers\UserController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -19,7 +19,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 |
 */
 
-Route::get('/', fn() => "u2k: Kindly go back");
+Route::get('/', fn() => "u2k API: Kindly go back");
 
 Route::prefix('users')->group(function() {
     Route::post('/', SignupController::class);
@@ -29,5 +29,6 @@ Route::prefix('users')->group(function() {
 });
 
 Route::middleware('auth:sanctum')->group(function() {
+    Route::put('/users/pin', [UserController::class, 'setUserPin']);
     Route::delete('/users/logout', LogoutController::class);
 });

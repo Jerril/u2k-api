@@ -16,10 +16,12 @@ class SignupController extends Controller
     {
         $data = $request->validated();
 
-        // generate qrcode for user
-        $data['qrcode'] = (string)QrCode::size(250)->generate('Your QR code data here');
-
         $user = User::create($data);
+
+        // generate qrcode for user
+        $user->qrcode = (string)QrCode::size(250)->generate($user->id);
+        $user->save();
+
         $this->sendVerificationCode($user, 'phone');
 
         return $this->sendSuccess($user, 'Registration successful. Check your phone for verification code');
