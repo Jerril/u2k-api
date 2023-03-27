@@ -17,4 +17,26 @@ class UserController extends Controller
 
         return $this->sendSuccess(auth()->user(), 'Pin set successsfully');
     }
+
+    public function getUserTransactions()
+    {
+        return auth()->user()->balance;
+    }
+
+    public function transferToWallet()
+    {
+        // withdraw from one
+        // add to another
+        return "transfer initiated";
+    }
+
+    public function depositToWallet()
+    {
+        return auth()->user()->deposit(10);
+    }
+
+    public function withdrawFromWallet()
+    {
+        return auth()->user()->withdraw(10);
+    }
 }

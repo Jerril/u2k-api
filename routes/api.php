@@ -29,6 +29,15 @@ Route::prefix('users')->group(function() {
 });
 
 Route::middleware('auth:sanctum')->group(function() {
-    Route::put('/users/pin', [UserController::class, 'setUserPin']);
-    Route::delete('/users/logout', LogoutController::class);
+    Route::prefix('users')->group(function() {
+        Route::delete('/logout', LogoutController::class);
+        Route::put('/pin', [UserController::class, 'setUserPin']);
+
+        Route::prefix('/wallet')->group(function() {
+            Route::get('/', [UserController::class, 'getUserTransactions']);
+            Route::put('/transfer', [UserController::class, 'transferToWallet']);
+            Route::post('/deposit', [UserController::class, 'depositToWallet']);
+            Route::post('/withdraw', [UserController::class, 'withdrawFromWallet']);
+        });
+    });
 });

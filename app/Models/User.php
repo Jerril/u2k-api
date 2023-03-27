@@ -9,10 +9,12 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
 use App\Traits\Utils;
+use Bavix\Wallet\Traits\HasWallet;
+use Bavix\Wallet\Interfaces\Wallet;
 
-class User extends Authenticatable
+class User extends Authenticatable implements Wallet
 {
-    use HasApiTokens, HasFactory, Notifiable, Utils;
+    use HasApiTokens, HasFactory, Notifiable, Utils, HasWallet;
 
     /**
      * The attributes that are mass assignable.
