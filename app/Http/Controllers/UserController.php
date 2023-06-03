@@ -10,7 +10,7 @@ class UserController extends Controller
     protected function setUserPin(Request $request)
     {
         $data = $request->validate([
-            'pin' => 'integer|max_digits:4|confirmed'
+            'pin' => 'integer|min_digits:4|max_digits:4|confirmed'
         ]);
 
         auth()->user()->pin = $data['pin'];
