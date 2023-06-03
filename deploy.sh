@@ -13,8 +13,6 @@ GITHUB_BRANCH=$GITHUB_BRANCH
 # Clone the GitHub repository
 echo "Updating project from $GITHUB_REPO ..."
 
-git init
-git remote add origin $GITHUB_REPO
 git pull orign $GITHUB_BRANCH
 
 # Install dependencies and perform Laravel-specific tasks
