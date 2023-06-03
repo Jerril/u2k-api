@@ -18,9 +18,7 @@ class SendPhoneNumberVerificationCodeController extends Controller
 
         // convert phone number to international format
         $phone_number = $this->formatPhoneNumber($request->phone_number);
-
         $user = User::where('phone_number', $phone_number)->first();
-
         if(!$user){
             return $this->sendError('User not found', 404);
         }

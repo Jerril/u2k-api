@@ -16,6 +16,12 @@ class SignupController extends Controller
     {
         $data = $request->validated();
 
+        // check if phone_number already exist
+        $user = User::where('phone_number', $this->formatPhoneNumber($request->phone_number))->first();
+        if($user){
+            return $this->sendError('User already exist', 401);
+        }
+
         $user = User::create($data);
 
         // generate qrcode for user
