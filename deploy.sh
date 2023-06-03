@@ -1,12 +1,14 @@
 #!/bin/bash
 
+source .env
+
 # Set variables
-FTP_HOST="ftp.u2k.site"
-FTP_USERNAME="nczolksu"
-FTP_PASSWORD="0RhtXKdeioPj"
-REMOTE_DIRECTORY="/home/nczolksu"
-GITHUB_REPO="https://github.com/Jerril/u2k-api.git"
-GITHUB_BRANCH="main"
+FTP_HOST=$FTP_HOST
+FTP_USERNAME=$FTP_USERNAME
+FTP_PASSWORD=$FTP_PASSWORD
+REMOTE_DIRECTORY=$REMOTE_DIRECTORY
+GITHUB_REPO=$GITHUB_REPO
+GITHUB_BRANCH=$GITHUB_BRANCH
 
 # Clone the GitHub repository
 echo "Updating project from $GITHUB_REPO ..."
