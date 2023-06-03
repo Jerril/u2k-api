@@ -20,15 +20,9 @@ class UserController extends Controller
 
 
     protected function getUser(User $user)
-    {
-        if(auth()->id !== $user->id){
-            return $this->sendError('Unauthorised access', 401);
-        }
-        
+    {   
         return $this->sendSuccess($user);
     }
-
-
 
     protected function getUserTransactions()
     {

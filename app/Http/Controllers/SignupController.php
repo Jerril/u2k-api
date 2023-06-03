@@ -25,8 +25,8 @@ class SignupController extends Controller
         $user = User::create($data);
 
         // generate qrcode for user
-        $user->qrcode = (string)QrCode::size(250)->generate($user->id);
-        $user->save();
+        // $user->qrcode = (string)QrCode::size(250)->generate($user->id);
+        // $user->save();
 
         $this->sendVerificationCode($user, 'phone');
 
