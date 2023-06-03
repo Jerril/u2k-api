@@ -30,6 +30,6 @@ class SignupController extends Controller
 
         $this->sendVerificationCode($user, 'phone');
 
-        return $this->sendSuccess($user, 'Registration successful. Check your phone for verification code');
+        return $this->sendSuccess($user, 'Registration successful. Check your phone for verification code', 201);
     }
 }
