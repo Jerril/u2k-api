@@ -10,11 +10,13 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
 use App\Traits\Utils;
 use Bavix\Wallet\Traits\HasWallet;
+use Bavix\Wallet\Traits\HasWalletFloat;
+use Bavix\Wallet\Interfaces\WalletFloat;
 use Bavix\Wallet\Interfaces\Wallet;
 
-class User extends Authenticatable implements Wallet
+class User extends Authenticatable implements Wallet, WalletFloat
 {
-    use HasWallet, HasApiTokens, HasFactory, Notifiable, Utils;
+    use HasWallet, HasWalletFloat, HasApiTokens, HasFactory, Notifiable, Utils;
 
     /**
      * The attributes that are mass assignable.

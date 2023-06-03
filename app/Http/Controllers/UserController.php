@@ -26,46 +26,62 @@ class UserController extends Controller
 
     public function getWalletBalance()
     {
-        return $this->sendSuccess(auth()->user()->balanceInt);
+        $balance = [
+            'balance' => auth()->user()->balanceFloat
+        ];
+
+        return $this->sendSuccess($balance);
     }
 
     protected function transferToWallet(Request $request)
     {
-        $data = request->validate([
+        $data = $request->validate([
             'recipient_id' =>  'required|exists:users,id',
-            'amount' => 'integer'
+            'amount' => 'required|decimal:2'
         ]);
-
-        // check for insufficient balance
-        if($data['amount'] > auth()->user()->balanceInt){
-            return $this->sendError('Insufficient balance', 401);
-        }
         
-        auth()->user()->withdraw($data['amount']);
+        auth()->user()->withdrawFloat($data['amount']);
         
         $recipient = User::where('id', $data['recipient_id'])->first();
         if(!$recipient){
             return $this->sendError('Recipient not found', 401);
         }
 
-        auth()->user()->deposit($data['amount']);
+        auth()->user()->depositFloat($data['amount']);
 
         // store in transaction table
 
-        return $this->success([], 'Transfer successful!', 200);
+        return $this->sendSuccess([], 'Transfer successful!', 200);
     }
 
-    protected function depositToWallet()
+    protected function depositToWallet(Request $request)
     {
-        return "transfer from bank to u2k wallet";
+        $data = $request->validate([
+            'amount' => 'required|decimal:2'
+        ]);
+
+        // process bank details
         // receive money from bank through paystack to our paystack wallet
-        // return auth()->user()->deposit(10);
+        
+        auth()->user()->depositFloat($data['amount']);
+
+        // store in transaction table
+
+        return $this->sendSuccess([], 'Deposit successful!', 200);
     }
 
-    protected function withdrawFromWallet()
+    protected function withdrawFromWallet(Request $request)
     {
-        return "transfer from u2k wallet to bank account";
+        $data = $request->validate([
+            'amount' => 'required|decimal:2'
+        ]);
+
+        // process bank details
         // send money from our paystack wallet to users bank account
-        // return auth()->user()->withdraw(10);
+
+        auth()->user()->withdrawFloat($data['amount']);
+
+        // store in transaction table
+        return $this->sendSuccess([], 'Withdrawal successful!', 200);
     }
 }
