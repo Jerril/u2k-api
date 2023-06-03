@@ -14,7 +14,7 @@ use Bavix\Wallet\Interfaces\Wallet;
 
 class User extends Authenticatable implements Wallet
 {
-    use HasApiTokens, HasFactory, Notifiable, Utils, HasWallet;
+    use HasWallet, HasApiTokens, HasFactory, Notifiable, Utils;
 
     /**
      * The attributes that are mass assignable.

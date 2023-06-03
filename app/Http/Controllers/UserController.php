@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class UserController extends Controller
 {
@@ -18,31 +19,53 @@ class UserController extends Controller
         return $this->sendSuccess(auth()->user(), 'Pin set successsfully');
     }
 
-
     protected function getUser(User $user)
     {   
         return $this->sendSuccess($user);
     }
 
-    protected function getUserTransactions()
+    public function getWalletBalance()
     {
-        return auth()->user()->balance;
+        return $this->sendSuccess(auth()->user()->balanceInt);
     }
 
-    protected function transferToWallet()
+    protected function transferToWallet(Request $request)
     {
-        // withdraw from one
-        // add to another
-        return "transfer initiated";
+        $data = request->validate([
+            'recipient_id' =>  'required|exists:users,id',
+            'amount' => 'integer'
+        ]);
+
+        // check for insufficient balance
+        if($data['amount'] > auth()->user()->balanceInt){
+            return $this->sendError('Insufficient balance', 401);
+        }
+        
+        auth()->user()->withdraw($data['amount']);
+        
+        $recipient = User::where('id', $data['recipient_id'])->first();
+        if(!$recipient){
+            return $this->sendError('Recipient not found', 401);
+        }
+
+        auth()->user()->deposit($data['amount']);
+
+        // store in transaction table
+
+        return $this->success([], 'Transfer successful!', 200);
     }
 
     protected function depositToWallet()
     {
-        return auth()->user()->deposit(10);
+        return "transfer from bank to u2k wallet";
+        // receive money from bank through paystack to our paystack wallet
+        // return auth()->user()->deposit(10);
     }
 
     protected function withdrawFromWallet()
     {
-        return auth()->user()->withdraw(10);
+        return "transfer from u2k wallet to bank account";
+        // send money from our paystack wallet to users bank account
+        // return auth()->user()->withdraw(10);
     }
 }
