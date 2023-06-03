@@ -13,12 +13,9 @@ GITHUB_BRANCH=$GITHUB_BRANCH
 # Clone the GitHub repository
 echo "Updating project from $GITHUB_REPO ..."
 
+git init
+git remote add origin $GITHUB_REPO
 git pull orign $GITHUB_BRANCH
-# cd u2k-api
-
-
-# Checkout the desired branch
-git checkout $GITHUB_BRANCH
 
 # Install dependencies and perform Laravel-specific tasks
 echo "installing necessary packages and running migration ..."
