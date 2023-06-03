@@ -13,8 +13,9 @@ GITHUB_BRANCH=$GITHUB_BRANCH
 # Clone the GitHub repository
 echo "Updating project from $GITHUB_REPO ..."
 
-git clone $GITHUB_REPO
-cd u2k-api
+git pull orign $GITHUB_BRANCH
+# cd u2k-api
+
 
 # Checkout the desired branch
 git checkout $GITHUB_BRANCH

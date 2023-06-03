@@ -27,6 +27,7 @@ class PhoneNumberVerificationController extends Controller
             return $this->sendError('User not found', 404);
         }
 
+        // check if user entered right token
         $existing_token = DB::table('user_verification_tokens')->where([
             'phone_number' => $phone_number,
             'type' => 'phone',

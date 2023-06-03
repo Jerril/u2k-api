@@ -18,24 +18,36 @@ class UserController extends Controller
         return $this->sendSuccess(auth()->user(), 'Pin set successsfully');
     }
 
-    public function getUserTransactions()
+
+    protected function getUser(User $user)
+    {
+        if(auth()->id !== $user->id){
+            return $this->sendError('Unauthorised access', 401);
+        }
+        
+        return $this->sendSuccess($user);
+    }
+
+
+
+    protected function getUserTransactions()
     {
         return auth()->user()->balance;
     }
 
-    public function transferToWallet()
+    protected function transferToWallet()
     {
         // withdraw from one
         // add to another
         return "transfer initiated";
     }
 
-    public function depositToWallet()
+    protected function depositToWallet()
     {
         return auth()->user()->deposit(10);
     }
 
-    public function withdrawFromWallet()
+    protected function withdrawFromWallet()
     {
         return auth()->user()->withdraw(10);
     }

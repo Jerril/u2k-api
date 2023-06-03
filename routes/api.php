@@ -32,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::prefix('users')->group(function() {
         Route::delete('/logout', LogoutController::class);
         Route::put('/pin', [UserController::class, 'setUserPin']);
+        Route::get('/{user}', [UserController::class, 'getUser']);
 
         Route::prefix('/wallet')->group(function() {
             Route::get('/', [UserController::class, 'getUserTransactions']);
