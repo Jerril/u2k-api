@@ -46,19 +46,15 @@ class User extends Authenticatable implements Wallet, WalletFloat
         'email_verified_at' => 'datetime',
     ];
 
-    public function transactions()
-    {
-        return $this->hasMany(Transactions::class);
-    }
 
     public function sent_trx()
     {
-        return $this->hasMany(Transaction::class, 'sender_id');
+        return $this->hasMany(Trx::class, 'sender_id');
     }
 
     public function received_trx()
     {
-        return $this->hasMany(Transaction::class, 'receiver_id');
+        return $this->hasMany(Trx::class, 'receiver_id');
     }
 
     public function setPasswordAttribute($value)

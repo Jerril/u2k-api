@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
-use App\Models\Transaction;
+use App\Models\Trx;
 use App\Services\Paystack;
 
 class UserController extends Controller
@@ -59,7 +59,7 @@ class UserController extends Controller
             $recipient->depositFloat($data['amount']);
 
             // store in transaction table
-            $transaction = Transaction::create([
+            $transaction = Trx::create([
                 'type' => 'transfer',
                 'sender_id' => auth()->id(),
                 'receiver_id' => $recipient->id,
@@ -74,7 +74,7 @@ class UserController extends Controller
         } catch(Exception $ex) {
             DB::rollback();
 
-            $transaction = Transaction::create([
+            $transaction = Trx::create([
                 'type' => 'transfer',
                 'sender_id' => auth()->id(),
                 'receiver_id' => $recipient->id,
@@ -103,7 +103,7 @@ class UserController extends Controller
 
             // store in transaction table
             // TODO: state should ideally be initated until trx is verfied
-            $transaction = Transaction::create([
+            $transaction = Trx::create([
                 'type' => 'deposit',
                 'sender_id' => auth()->id(),
                 'amount' => $data['amount'],
@@ -118,7 +118,7 @@ class UserController extends Controller
         } catch(Exception $ex) {
             DB::rollback();
 
-            $transaction = Transaction::create([
+            $transaction = Trx::create([
                 'type' => 'deposit',
                 'sender_id' => auth()->id(),
                 'amount' => $data['amount'],
@@ -144,7 +144,7 @@ class UserController extends Controller
             // set trx state to failed
 
             // if true update ref in transaction table to successful
-            // $transaction = Transaction::where('ref', $data['ref'])->update(['state' => 'successful']);
+            // $transaction = Trx::where('ref', $data['ref'])->update(['state' => 'successful']);
 
             DB::commit();
             return $this->sendSuccess($payment_verification);
@@ -175,7 +175,7 @@ class UserController extends Controller
 
             // store in transaction table
             // TODO: state should ideally be initated until trx is verfied
-            $transaction = Transaction::create([
+            $transaction = Trx::create([
                 'type' => 'withdrawal',
                 'sender_id' => auth()->id(),
                 'amount' => $data['amount'],
@@ -191,7 +191,7 @@ class UserController extends Controller
         } catch(Exception $ex) {
             DB::rollback();
 
-            $transaction = Transaction::create([
+            $transaction = Trx::create([
                 'type' => 'withdrawal',
                 'sender_id' => auth()->id(),
                 'amount' => $data['amount'],
