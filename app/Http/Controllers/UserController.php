@@ -88,7 +88,7 @@ class UserController extends Controller
         try {
             // process bank details
             // receive money from bank through paystack to our paystack wallet
-            $payment_info = $this->paystack->initializeTransfer($amount);
+            $payment_info = $this->paystack->initializeTransfer($data['amount']);
 
             auth()->user()->depositFloat($data['amount']);
 
@@ -99,12 +99,12 @@ class UserController extends Controller
             //     'receiver' => $recipient,
             //     'amount' => $data['amount'],
             //     'ref' => time()."U".auth()->id(),
-            //     'paystack_ref' => $payment_info['reference'],
+            //     'paystack_ref' => $payment_info['data']['reference'],
             //     'state' => 'initiated'
             // ]);
 
             DB::commit();
-            return $this->sendSuccess($payment_info, 'Deposit initiated!', 200);
+            return $this->sendSuccess($payment_info['data'], 'Deposit initiated!', 200);
 
         } catch(Exception $ex) {
             DB::rollback();
@@ -115,12 +115,12 @@ class UserController extends Controller
     public function verifyWalletDeposit(Request $request)
     {
         $data = $request->validate([
-            'ref' => 'nullable|string'
+            'reference' => 'nullable|string'
         ]);
 
         DB::beginTransaction();
         try {
-            $payment_verification = $this->paystack->verifyTransaction($amount);
+            $payment_verification = $this->paystack->verifyTransaction($data['reference']);
 
             // if verification not successful, deduct from the wallet,
             // set trx state to failed
@@ -129,7 +129,7 @@ class UserController extends Controller
             // $transaction = Transaction::where('ref', $data['ref'])->update(['state' => 'successful']);
 
             DB::commit();
-            return $this->sendSuccess($payment_verification, 'Deposit initiated!', 200);
+            return $this->sendSuccess($payment_verification['data']);
 
         } catch(Exception $ex) {
             DB::rollback();
@@ -152,9 +152,9 @@ class UserController extends Controller
 
             // crete transfer recipient
             $transfer_recipient = $this->paystack->createTransferRecipient(auth()->user()->phone_number, $data['account_no'], $data['bank_code']);
-
+            
             // initiate transfer
-            $transfer_info = $this->paystack->initiateTransfer($amount, $data['account_no'], $data['bank_code']);
+            $transfer_info = $this->paystack->initiateTransfer($data['amount'], $transfer_recipient['data']['recipient_code']);
 
             auth()->user()->withdrawFloat($data['amount']);
 
@@ -177,6 +177,8 @@ class UserController extends Controller
             return $this->sendError($ex->getMessage());
         }
     }
+
+    // verify withdrawal
 
     protected function getBanks()
     {

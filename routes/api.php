@@ -40,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function() {
             Route::get('/balance', [UserController::class, 'getWalletBalance']);
             Route::post('/transfer', [UserController::class, 'transferToWallet']);
             Route::post('/deposit', [UserController::class, 'depositToWallet']);
+            Route::post('/deposit/verify', [UserController::class, 'verifyWalletDeposit']);
             Route::post('/withdraw', [UserController::class, 'withdrawFromWallet']);
         });
     });

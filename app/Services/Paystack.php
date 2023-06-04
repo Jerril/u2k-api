@@ -49,15 +49,15 @@ class Paystack
     }
 
     // initiate transfer
-    public function initiateTransfer($amount, $recipient, $reference="your-unique-reference")
+    public function initiateTransfer($amount, $recipient)
     {
         $response = Http::withHeaders([
             "Authorization" => "Bearer ".env('PAYSTACK_SECRET_KEY'),
             "Cache-Control" => 'no-cache'
         ])->post("https://api.paystack.co/transfer", [
             "source" => "balance", 
-            "amount" => $amount,
-            "reference" => $reference,
+            "amount" => $amount*100,
+            "reference" => time(),
             "recipient" => $recipient,
             "reason" => "Holiday Flexing"
         ])->json();
