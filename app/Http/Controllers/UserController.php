@@ -104,7 +104,7 @@ class UserController extends Controller
             // ]);
 
             DB::commit();
-            return $this->sendSuccess($payment_info['data'], 'Deposit initiated!', 200);
+            return $this->sendSuccess($payment_info, 'Deposit initiated!', 200);
 
         } catch(Exception $ex) {
             DB::rollback();
