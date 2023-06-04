@@ -12,8 +12,8 @@ class UserController extends Controller
 {
     protected $paystack;
 
-    public function __constructor(Paystack $paystack) {
-        $thi->paystack = $paystack;
+    public function __construct(Paystack $paystack) {
+        $this->paystack = $paystack;
     }
 
     protected function setUserPin(Request $request)
@@ -59,13 +59,14 @@ class UserController extends Controller
             $recipient->depositFloat($data['amount']);
 
             // store in transaction table
-            $transaction = Transaction::create([
-                'type' => 'transfer',
-                'sender' => auth()->user(),
-                'receiver' => $recipient,
-                'ref' => 'random ref',
-                'state' => 'successful'
-            ]);
+            $transaction = [];
+            // $transaction = Transaction::create([
+            //     'type' => 'transfer',
+            //     'sender' => auth()->user(),
+            //     'receiver' => $recipient,
+            //     'ref' => 'random ref',
+            //     'state' => 'successful'
+            // ]);
 
             DB::commit();
             return $this->sendSuccess($transaction, 'Transfer successful!', 200);
@@ -92,18 +93,18 @@ class UserController extends Controller
             auth()->user()->depositFloat($data['amount']);
 
             // store in transaction table
-            $transaction = Transaction::create([
-                'type' => 'deposit',
-                'sender' => auth()->user(),
-                'receiver' => $recipient,
-                'amount' => $data['amount'],
-                'ref' => time()."U".auth()->id(),
-                'paystack_ref' => $payment_info['reference'],
-                'state' => 'initiated'
-            ]);
+            // $transaction = Transaction::create([
+            //     'type' => 'deposit',
+            //     'sender' => auth()->user(),
+            //     'receiver' => $recipient,
+            //     'amount' => $data['amount'],
+            //     'ref' => time()."U".auth()->id(),
+            //     'paystack_ref' => $payment_info['reference'],
+            //     'state' => 'initiated'
+            // ]);
 
             DB::commit();
-            return $this->sendSuccess($payment_info['authorization_url'], 'Deposit initiated!', 200);
+            return $this->sendSuccess($payment_info, 'Deposit initiated!', 200);
 
         } catch(Exception $ex) {
             DB::rollback();
@@ -125,10 +126,10 @@ class UserController extends Controller
             // set trx state to failed
 
             // if true update ref in transaction table to successful
-            $transaction = Transaction::where('ref', $data['ref'])->update(['state' => 'successful']);
+            // $transaction = Transaction::where('ref', $data['ref'])->update(['state' => 'successful']);
 
             DB::commit();
-            return $this->sendSuccess($payment_info, 'Deposit initiated!', 200);
+            return $this->sendSuccess($payment_verification, 'Deposit initiated!', 200);
 
         } catch(Exception $ex) {
             DB::rollback();
@@ -153,27 +154,42 @@ class UserController extends Controller
             $transfer_recipient = $this->paystack->createTransferRecipient(auth()->user()->phone_number, $data['account_no'], $data['bank_code']);
 
             // initiate transfer
-            $transfer_recipient = $this->paystack->initiateTransfer($amount, $data['account_no'], $data['bank_code']);
+            $transfer_info = $this->paystack->initiateTransfer($amount, $data['account_no'], $data['bank_code']);
 
             auth()->user()->withdrawFloat($data['amount']);
 
             // store in transaction table
-            $transaction = Transaction::create([
-                'type' => 'withdrawal',
-                'sender' => auth()->user(),
-                'receiver' => $data['account_no'],
-                'amount' => $data['amount'],
-                'ref' => time()."U".auth()->id(),
-                'paystack_ref' => $payment_info['reference'],
-                'state' => 'initiated'
-            ]);
+            // $transaction = Transaction::create([
+            //     'type' => 'withdrawal',
+            //     'sender' => auth()->user(),
+            //     'receiver' => $data['account_no'],
+            //     'amount' => $data['amount'],
+            //     'ref' => time()."U".auth()->id(),
+            //     'paystack_ref' => $payment_info['reference'],
+            //     'state' => 'initiated'
+            // ]);
 
             DB::commit();
-            return $this->sendSuccess($transaction, 'Withdrawal successful!', 200);
+            return $this->sendSuccess($transfer_info, 'Withdrawal successful!');
 
         } catch(Exception $ex) {
             DB::rollback();
             return $this->sendError($ex->getMessage());
         }
+    }
+
+    protected function getBanks()
+    {
+        return $this->sendSuccess($this->paystack->listBanks(), 'All Banks');
+    }
+
+    protected function verifyBankDetails(Request $request, Paystack $paystack)
+    {
+        $data = $request->validate([
+            'account_no' => 'required|string',
+            'bank_code' => 'required|string',
+        ]);
+
+        return $this->sendSuccess($this->paystack->verifyAccountDetails($data['account_no'], $data['bank_code']));
     }
 }

@@ -8,6 +8,7 @@ use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\PhoneNumberVerificationController;
 use App\Http\Controllers\SendPhoneNumberVerificationCodeController;
 use App\Http\Controllers\UserController;
+use App\Services\Paystack;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -35,14 +36,16 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('/{user}', [UserController::class, 'getUser']);
 
         Route::prefix('/wallet')->group(function() {
-            // get list of banks
-            // verify details
             // get transaction history
-            
             Route::get('/balance', [UserController::class, 'getWalletBalance']);
             Route::post('/transfer', [UserController::class, 'transferToWallet']);
             Route::post('/deposit', [UserController::class, 'depositToWallet']);
             Route::post('/withdraw', [UserController::class, 'withdrawFromWallet']);
         });
+    });
+
+    Route::prefix('banks')->group(function() {
+        Route::get('/', [UserController::class, 'getBanks']);
+        Route::post('/verify', [UserController::class, 'verifyBankDetails']);
     });
 });
