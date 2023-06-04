@@ -82,7 +82,7 @@ class Paystack
         ])->post("https://api.paystack.co/transaction/initialize", [
             "email" => $email,
             "amount" => $amount * 100,
-            "callback_url" => env('PAYSTACK_CALLBACK_URL'),
+            "callback_url" => "https://standard.paystack.co/close",
             "currency" => "NGN"
         ])->json();
 
