@@ -36,8 +36,9 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('/{user}', [UserController::class, 'getUser']);
 
         Route::prefix('/wallet')->group(function() {
-            // get transaction history
             Route::get('/balance', [UserController::class, 'getWalletBalance']);
+            Route::get('/history', [UserController::class, 'getTransactionHistory']);
+
             Route::post('/transfer', [UserController::class, 'transferToWallet']);
             Route::post('/deposit', [UserController::class, 'depositToWallet']);
             Route::post('/deposit/verify', [UserController::class, 'verifyWalletDeposit']);

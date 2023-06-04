@@ -40,6 +40,17 @@ class UserController extends Controller
         return $this->sendSuccess($balance);
     }
 
+    public function getTransactionHistory()
+    {
+        $history = Trx::where('sender_id', auth()->id())
+            ->orWhere('receiver_id', auth()->id())
+            ->latest()
+            ->with('sender', 'receiver')
+            ->get();
+
+        return $this->sendSuccess($history);
+    }
+
     protected function transferToWallet(Request $request)
     {
         $data = $request->validate([
