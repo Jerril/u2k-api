@@ -74,7 +74,7 @@ class Paystack
     */
 
     // initialize transfer & get paystack payment modal
-    public function initializeTransfer($email, $amount)
+    public function initializeTransfer($amount, $email = 'dayoolapeju@gmail.com')
     {
         $response = Http::withHeaders([
             "Authorization" => "Bearer ".env('PAYSTACK_SECRET_KEY'),
