@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->enum('type', ['transfer', 'withdrawal', 'deposit']);
-            $table->json('sender');
-            $table->json('receiver');
+            $table->foreignId('sender_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('receiver_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->float('amount');
             $table->string('ref')->nullable();
             $table->string('paystack_ref')->nullable();
+            $table->json('details')->nullable();
             $table->enum('state', ['initiated', 'failed', 'successful'])->default('initiated');
             $table->timestamps();
         });

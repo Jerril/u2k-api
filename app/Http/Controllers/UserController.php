@@ -47,32 +47,42 @@ class UserController extends Controller
             'amount' => 'required|decimal:2'
         ]);
 
+        $recipient = User::where('id', $data['recipient_id'])->first();
+        if(!$recipient){
+            return $this->sendError('Recipient not found', 401);
+        }
+
         DB::beginTransaction();
         try {
             auth()->user()->withdrawFloat($data['amount']);
-        
-            $recipient = User::where('id', $data['recipient_id'])->first();
-            if(!$recipient){
-                return $this->sendError('Recipient not found', 401);
-            }
 
             $recipient->depositFloat($data['amount']);
 
             // store in transaction table
-            $transaction = [];
-            // $transaction = Transaction::create([
-            //     'type' => 'transfer',
-            //     'sender' => auth()->user(),
-            //     'receiver' => $recipient,
-            //     'ref' => 'random ref',
-            //     'state' => 'successful'
-            // ]);
+            $transaction = Transaction::create([
+                'type' => 'transfer',
+                'sender_id' => auth()->id(),
+                'receiver_id' => $recipient->id,
+                'amount' => $data['amount'],
+                'ref' => time()."U".auth()->id(),
+                'state' => 'successful'
+            ]);
 
             DB::commit();
             return $this->sendSuccess($transaction, 'Transfer successful!', 200);
 
         } catch(Exception $ex) {
             DB::rollback();
+
+            $transaction = Transaction::create([
+                'type' => 'transfer',
+                'sender_id' => auth()->id(),
+                'receiver_id' => $recipient->id,
+                'amount' => $data['amount'],
+                'ref' => time()."U".auth()->id(),
+                'state' => 'failed'
+            ]);
+
             return $this->sendError($ex->getMessage());
         }
     }
@@ -86,28 +96,36 @@ class UserController extends Controller
 
         DB::beginTransaction();
         try {
-            // process bank details
-            // receive money from bank through paystack to our paystack wallet
+            // get paystack checkout modal link
             $payment_info = $this->paystack->initializeTransfer($data['amount']);
 
             auth()->user()->depositFloat($data['amount']);
 
             // store in transaction table
-            // $transaction = Transaction::create([
-            //     'type' => 'deposit',
-            //     'sender' => auth()->user(),
-            //     'receiver' => $recipient,
-            //     'amount' => $data['amount'],
-            //     'ref' => time()."U".auth()->id(),
-            //     'paystack_ref' => $payment_info['data']['reference'],
-            //     'state' => 'initiated'
-            // ]);
+            // TODO: state should ideally be initated until trx is verfied
+            $transaction = Transaction::create([
+                'type' => 'deposit',
+                'sender_id' => auth()->id(),
+                'amount' => $data['amount'],
+                'ref' => time()."U".auth()->id(),
+                'paystack_ref' => $payment_info['data']['reference'],
+                'state' => 'successful'
+            ]);
 
             DB::commit();
             return $this->sendSuccess($payment_info, 'Deposit initiated!', 200);
 
         } catch(Exception $ex) {
             DB::rollback();
+
+            $transaction = Transaction::create([
+                'type' => 'deposit',
+                'sender_id' => auth()->id(),
+                'amount' => $data['amount'],
+                'ref' => time()."U".auth()->id(),
+                'state' => 'failed'
+            ]);
+
             return $this->sendError($ex->getMessage());
         }
     }
@@ -129,7 +147,7 @@ class UserController extends Controller
             // $transaction = Transaction::where('ref', $data['ref'])->update(['state' => 'successful']);
 
             DB::commit();
-            return $this->sendSuccess($payment_verification['data']);
+            return $this->sendSuccess($payment_verification);
 
         } catch(Exception $ex) {
             DB::rollback();
@@ -147,38 +165,47 @@ class UserController extends Controller
 
         DB::beginTransaction();
         try {
-            // process bank details
-            // send money from our paystack wallet to users bank account
-
-            // crete transfer recipient
+            // create transfer recipient
             $transfer_recipient = $this->paystack->createTransferRecipient(auth()->user()->phone_number, $data['account_no'], $data['bank_code']);
-            
+
             // initiate transfer
             $transfer_info = $this->paystack->initiateTransfer($data['amount'], $transfer_recipient['data']['recipient_code']);
 
             auth()->user()->withdrawFloat($data['amount']);
 
             // store in transaction table
-            // $transaction = Transaction::create([
-            //     'type' => 'withdrawal',
-            //     'sender' => auth()->user(),
-            //     'receiver' => $data['account_no'],
-            //     'amount' => $data['amount'],
-            //     'ref' => time()."U".auth()->id(),
-            //     'paystack_ref' => $payment_info['reference'],
-            //     'state' => 'initiated'
-            // ]);
+            // TODO: state should ideally be initated until trx is verfied
+            $transaction = Transaction::create([
+                'type' => 'withdrawal',
+                'sender_id' => auth()->id(),
+                'amount' => $data['amount'],
+                'ref' => time()."U".auth()->id(),
+                'paystack_ref' => $payment_info['data']['reference'],
+                'details' => $transfer_recipient['data']['details'],
+                'state' => 'successful'
+            ]);
 
             DB::commit();
             return $this->sendSuccess($transfer_info, 'Withdrawal successful!');
 
         } catch(Exception $ex) {
             DB::rollback();
+
+            $transaction = Transaction::create([
+                'type' => 'withdrawal',
+                'sender_id' => auth()->id(),
+                'amount' => $data['amount'],
+                'ref' => time()."U".auth()->id(),
+                'state' => 'failed'
+            ]);
+
             return $this->sendError($ex->getMessage());
         }
     }
 
     // verify withdrawal
+
+
 
     protected function getBanks()
     {
