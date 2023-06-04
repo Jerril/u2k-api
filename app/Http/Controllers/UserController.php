@@ -180,7 +180,7 @@ class UserController extends Controller
                 'sender_id' => auth()->id(),
                 'amount' => $data['amount'],
                 'ref' => time()."U".auth()->id(),
-                'paystack_ref' => $payment_info['data']['reference'],
+                'paystack_ref' => $transfer_info['data']['reference'],
                 'details' => $transfer_recipient['data']['details'],
                 'state' => 'successful'
             ]);
